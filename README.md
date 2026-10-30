@@ -19,19 +19,21 @@ External DCF77-receiver: ELV DCF-2 (MAS6180 AM-receiver).<br>
 Temperature-sensor: DS18B20 with external pullup resistor 4,7k ohms.<br>
 
 Pins used (ATtiny84):<br>
-PA0 - Input, DCF-signal, active-low signal, external pull-up 10 kohms required, external RC low-pass filter recommended<br>
-PA1 - Output, TX for serial debugging<br>
-PA3 - Output, LED which mirrors the DCF-input signal in sync-state<br>
-PA4 - Input, external 32K clock-signal from DS3231, external pull-up 10 kohms required<br>
-PA5 - Output, powering DCF receive-module<br>
-PA6 - Input/Output, temp sensor DS18B20<br>
-PA7 - Input, mode select button, active low with input-pullup enabled<br>
-PB0 - I2C DATA for display & RTC<br>
-PB1 - I2C CLK for display & RTC<br>
+PA0 - Input, DCF-signal, active-low signal, external pull-up 10 kohms required, external RC low-pass filter recommended.<br>
+PA1 - Output, TX for serial debugging.<br>
+PA3 - Output, LED which mirrors the DCF-input signal in sync-state, active-high.<br>
+PA4 - Input, external 32K clock-signal from DS3231, external pull-up 10 kohms required.<br>
+PA5 - Output, powering DCF receive-module.<br>
+PA6 - Input/Output, temp sensor DS18B20.<br>
+PA7 - Input, mode select button, active low with input-pullup enabled.<br>
+PB0 - I2C DATA for display & RTC.<br>
+PB1 - I2C CLK for display & RTC.<br>
 
-Compiles with TinyCore on Arduino IDE.<br>
-External libraries required: SoftI2Master<br>
+Compiles with TinyCore (MCUdude) on Arduino IDE https://github.com/MCUdude/TinyCore.<br>
+External libraries required: SoftI2CMaster https://github.com/felias-fogg/SoftI2CMaster.<br>
 
+DS3231 RTC-breakout: https://www.adafruit.com/product/3013<br>
+DCF77-receiver: ELV DCF-2, any other receiver possible with digital signal output.<br>
 DFRobot 7-segment 8-digit display: https://www.dfrobot.com/product-1978.html<br>
 Custom built alphanumeric display: http://www.technoblogy.com/show?2ULE<br>
 Alphanumeric displays used on board: https://www.adafruit.com/product/2154
