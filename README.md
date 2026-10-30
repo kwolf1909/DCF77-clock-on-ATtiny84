@@ -1,6 +1,6 @@
 This application receives the european DCF77 time signal and syncs it with the external RTC-module DS3231. It is displayed on a 8-digit 14- or 7-segment display with display-controller HT16K33. The MCU used is an ATtiny84. The application has been ported from initial repository (using ATtiny1614 or ATmega4809) finally.<br>
 The circuit can be powered by a Li-Ion cell. If the voltage drops below 3.0 V, the voltage is displayed as a low voltage indicator.
-The temperatur can be read by internal DS3231 sensor or external OneWire-based DS18B20 sensor.<br>
+The temperature can be read by internal DS3231 sensor or external OneWire-based DS18B20 sensor.<br>
 A sync to DCF-time is performed in the background every 30 minutes, and immediately after power-up.<br>
 The software uses a layer-based approach. Low-level: DCF-object with interrupt handler,
 mid-level: receiving data state machine, upper level: display handling and user interface.<br>
