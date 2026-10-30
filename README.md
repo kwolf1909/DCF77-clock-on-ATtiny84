@@ -12,15 +12,11 @@ Select display modes: time with date | time with seconds | time with temperature
 
 MCU-clock: 8 MHz<br>
 Timers used: Timer1 (DCF pulse width measurement and 2 Hz generation for clock ticks)
-             
-External RTC: DS3231 with battery backup, supplies 32K clock for Timer1.<br>
-8-digit display (I2C): DFRobot 7-segment, or custom built 14-segment.<br>
-External DCF77-receiver: ELV DCF-2 (MAS6180 AM-receiver).<br>
-Temperature-sensor: DS18B20 with external pullup resistor 4,7k ohms.<br>
 
 Pins used (ATtiny84):<br>
 PA0 - Input, DCF-signal, active-low signal, external pull-up 10 kohms required, external RC low-pass filter recommended.<br>
 PA1 - Output, TX for serial debugging.<br>
+PA2 - Input, RX (not used).<br>
 PA3 - Output, LED which mirrors the DCF-input signal in sync-state, active-high.<br>
 PA4 - Input, external 32K clock-signal from DS3231, external pull-up 10 kohms required.<br>
 PA5 - Output, powering DCF receive-module.<br>
@@ -33,10 +29,11 @@ Compiles with TinyCore (MCUdude) on Arduino IDE https://github.com/MCUdude/TinyC
 External libraries required: SoftI2CMaster https://github.com/felias-fogg/SoftI2CMaster.<br>
 
 DS3231 RTC-breakout: https://www.adafruit.com/product/3013<br>
-DCF77-receiver: ELV DCF-2, any other receiver possible with digital signal output.<br>
+DCF77-receiver: ELV DCF-2 (MAS6180-based AM-receiver), any other receiver possible with digital signal output.<br>
 DFRobot 7-segment 8-digit display: https://www.dfrobot.com/product-1978.html<br>
 Custom built alphanumeric display: http://www.technoblogy.com/show?2ULE<br>
 Alphanumeric displays used on board: https://www.adafruit.com/product/2154
+Temperature-sensor: DS18B20 with external pullup resistor 4,7 kohms.<br>
 
 <img width="640" height="214" alt="alpha" src="https://github.com/user-attachments/assets/6b047f4b-43a1-4883-a1a5-ab0c732ea372" /><br>
 
