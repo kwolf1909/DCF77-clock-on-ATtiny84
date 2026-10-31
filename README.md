@@ -14,7 +14,7 @@ MCU-clock: 8 MHz<br>
 Timers used: Timer1 (DCF pulse width measurement and 2 Hz generation for clock ticks)
 
 Debugging:<br>
-A serial debug output (9600 baud) can be enabled by uncommenting SERIALDEBUG1 or SERIALDEBUG2. The latter outputs numeric values which takes more flash space. For this, some other functions need to be disabled temporarily, e.g. OneWire.<br>
+A serial debug output (9600 baud) can be enabled by uncommenting SERIALDEBUG. Due to limited flash space, this requires some other functions to be disabled temporarily, e.g. OneWire.<br>
 
 Pins used (ATtiny84):<br>
 PA0 - Input, DCF-signal, active-low signal, external pull-up 10 kohms required, external RC low-pass filter recommended.<br>
