@@ -1,11 +1,11 @@
-This application receives the european DCF77 time signal and syncs it with the external RTC-module DS3231. It is displayed on a 8-digit 14- or 7-segment display with display-controller HT16K33. The MCU used is an ATtiny84. The application has been ported from initial repository (using ATtiny1614 or ATmega4809) finally.<br>
-The circuit can be powered by a Li-Ion cell. If the voltage drops below 3.0 V, the voltage is displayed as a low voltage indicator.
+This application receives the european DCF77 time signal and syncs it with the external RTC-module DS3231. It is displayed on an 8-digit 14- or 7-segment display with display-controller HT16K33. The MCU used is an ATtiny84. The application has been ported from initial repository (using ATtiny1614 or ATmega4809) finally.<br>
+The circuit can be powered by a Li-Ion cell. If the voltage drops below 3.0 V, the voltage is displayed as a low voltage indicator.<br>
 The temperature can be read by internal DS3231 sensor or external OneWire-based DS18B20 sensor.<br>
 A sync to DCF-time is performed in the background every 30 minutes, and immediately after power-up.<br>
-The software uses a layer-based approach. Low-level: DCF-object with interrupt handler,
-mid-level: receiving data state machine, upper level: display handling and user interface.<br>
+The software uses a layer-based approach. Low-level: DCF-object with interrupt handler, mid-level: receiving data state machine, upper level: display handling and user interface.<br>
 No blocking code, using several finite state machines (FSM).<br>
-For I2C a bit-banging library is used, because the hardware-pin for I2C-CLK is shared with Timer1 clock-input (T1).
+For I2C a bit-banging library is used, because the hardware-pin for I2C-CLK is shared with Timer1 clock-input (T1).<br>
+The DCF-module is powered by an output pin, so it's only powered up during a receive cycle.<br>
 
 Push-button based interface<br>
 Select display modes: time with date | time with seconds | time with temperature | time with battery voltage.<br>
@@ -20,10 +20,10 @@ Pins used (ATtiny84):<br>
 PA0 - Input, DCF-signal, active-low signal, external pull-up 10 kohms required, external RC low-pass filter recommended.<br>
 PA1 - Output, TX for serial debugging.<br>
 PA2 - Input, RX (not used).<br>
-PA3 - Output, LED which mirrors the DCF-input signal in sync-state, active-high.<br>
+PA3 - Output, LED, mirrors the DCF-input signal in sync-state, active-high.<br>
 PA4 - Input, external 32K clock-signal from DS3231, external pull-up 10 kohms required.<br>
 PA5 - Output, powering DCF receive-module.<br>
-PA6 - Input/Output (OneWire Data), temperature sensor DS18B20.<br>
+PA6 - Input/Output (OneWire data), temperature sensor DS18B20 with external pullup resistor 10 kohms.<br>
 PA7 - Input, mode select button, active low with input-pullup enabled.<br>
 PB0 - I2C DATA for display & RTC.<br>
 PB1 - I2C CLK for display & RTC.<br>
@@ -31,12 +31,15 @@ PB1 - I2C CLK for display & RTC.<br>
 Compiles with TinyCore (MCUdude) on Arduino IDE https://github.com/MCUdude/TinyCore.<br>
 External libraries required: SoftI2CMaster https://github.com/felias-fogg/SoftI2CMaster.<br>
 
+Hardware:<br>
 DS3231 RTC Precision Breakout: https://www.adafruit.com/product/3013<br>
 DCF77-receiver: ELV DCF-2 (MAS6180-based AM-receiver), any other receiver possible with digital signal output.<br>
-DFRobot 7-segment 8-digit display: https://www.dfrobot.com/product-1978.html<br>
-Custom built alphanumeric display: http://www.technoblogy.com/show?2ULE<br>
+DFRobot 7-segment 8-digit 7-segment display: https://www.dfrobot.com/product-1978.html<br>
+Or: Custom built alphanumeric display: http://www.technoblogy.com/show?2ULE<br>
+Temperature-sensor: DS18B20<br>
+Resistors: 1x 1 kohm (LED), 3x 10 kohm (pullups)<br>
+
 Alphanumeric displays used on board: https://www.adafruit.com/product/2154<br>
-Temperature-sensor: DS18B20 with external pullup resistor 4,7 kohms.<br>
 
 <img width="640" height="214" alt="alpha" src="https://github.com/user-attachments/assets/6b047f4b-43a1-4883-a1a5-ab0c732ea372" /><br>
 
