@@ -81,7 +81,7 @@ RTC_DS3231 rtc;
 #endif
 
 #ifdef ONEWIRE
-OneWire ow(ONEWIRE_PIN);
+OneWire ow;
 #endif
 
 enum { TIME_NOTIME = 1, TIME_RTC, TIME_SYNC, TIME_SYNCED };
@@ -112,7 +112,7 @@ void setup() {
 #endif
 
 #ifdef ONEWIRE
-  ow.setup();
+  ow.setup(ONEWIRE_PIN);
   if (!ow.reset()) {
     ow.setResolution(ONEWIRE_RESOLUTION);
     alpha.print("TEMP OK ");

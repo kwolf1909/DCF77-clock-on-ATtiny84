@@ -4,19 +4,15 @@
 
 class OneWire {
   public:    
-    OneWire(uint8_t);
-    void setup();
+    OneWire();
     uint8_t reset();
-    void write(uint8_t);
-    uint8_t read();
-    void readBytes(uint8_t);
+    void setup(uint8_t);
     bool startConversion();
     int16_t readTemperature();
     bool setResolution(uint8_t);
     
   private:
-    uint8_t pinBitmask, pinBit, portID;
-    uint8_t dataBytes[9];
+    uint8_t pinBitmask, dataBytes[9];
     const uint8_t readROM = 0x33;
     const uint8_t matchROM = 0x55;
     const uint8_t skipROM = 0xCC;
@@ -30,7 +26,9 @@ class OneWire {
     const uint8_t res12bit = 0x7F;
     enum class timing { RESETLOW = 480, RESETREL = 70, RESETDELAY = 410, READLOW = 6, READREL = 9, READDELAY = 55,
                         WRITE0LOW = 60, WRITE0REL = 10, WRITE1LOW = 6, WRITE1REL = 64 };
-
+    void write(uint8_t);
+    uint8_t read();
+    void readBytes(uint8_t);
     inline void pinLow();
     inline void pinRelease();
     inline uint8_t pinRead();
@@ -38,13 +36,10 @@ class OneWire {
     uint8_t CRC(uint8_t);
 };
 
-OneWire::OneWire(uint8_t pin) {
-  pinBitmask = digitalPinToBitMask(pin);
-}
+OneWire::OneWire() {}
 
-void OneWire::setup(void) {
-
-  if (portID == NOT_A_PORT) return;
+void OneWire::setup(uint8_t owPin) {
+  pinBitmask = digitalPinToBitMask(owPin);
   DDRA &= ~pinBitmask;
 }
 
