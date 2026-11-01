@@ -93,13 +93,13 @@ dcf77::dcf77() {
   lastPulseType = dcfPulseType::START;
 }
 
-void dcf77::begin(uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4) {
-  pinBitmaskDcf = digitalPinToBitMask(pin1);
-  pinBitmaskDcfPwr = digitalPinToBitMask(pin2);
-  pinBitmaskLed = digitalPinToBitMask(pin3);
-  pinBitmask32k = digitalPinToBitMask(pin4);
+void dcf77::begin(uint8_t pinDcf, uint8_t pinDcfPwr, uint8_t pinLed, uint8_t pin32k) {
+  pinBitmaskDcf = digitalPinToBitMask(pinDcf);
+  pinBitmaskDcfPwr = digitalPinToBitMask(pinDcfPwr);
+  pinBitmaskLed = digitalPinToBitMask(pinLed);
+  pinBitmask32k = digitalPinToBitMask(pin32k);
 
-  // DCF signal input with pullup
+  // DCF signal input
   DDRA &= ~pinBitmaskDcf;
   PORTA |= pinBitmaskDcf;
 
@@ -125,9 +125,6 @@ void dcf77::begin(uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4) {
 
 void dcf77::handle(void) {
 
-#ifdef SERIALDEBUG2
-  char buffer[40];
-#endif
   if (checkSignal() == false) state = dcfState::IDLE;
   if (pulseReceivedDcf == false) return;
   pulseReceivedDcf = false;
@@ -263,8 +260,7 @@ void dcf77::timerSetup(void) {
   TCNT1  = 0;
   TCCR1B |= (1 << WGM12);
 
-  // 256 Hz interrupt
-  // (32768 Hz / 256 Hz) - 1 = 127
+  // 256 Hz interrupt - (32768 Hz / 256 Hz) - 1 = 127
   OCR1A = 127;
 
   // enable output compare match A interrupt

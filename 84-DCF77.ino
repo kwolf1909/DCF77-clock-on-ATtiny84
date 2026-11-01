@@ -6,7 +6,7 @@
 //  The MCU used is an ATtiny84.
 //  The circuit can be powered by a Li-Ion cell. If the voltage drops below 3.0 V,
 //  the voltage is displayed as a low voltage indicator.
-//  The temperatur can be read by internal DS3231 sensor or external OneWire-based DS18B20 sensor.
+//  The temperatur can be read by internal sensor of RTC or external OneWire-based sensor.
 //  A push button switches between different display modes:
 //  Time with date, time with seconds, time with temperature, time with battery voltage
 //
@@ -15,7 +15,7 @@
 //  External RTC: DS3231 with battery backup, supplies 32K clock for Timer1
 //
 //  Author: Klaus Wolf
-//  Date: Oct 31 2026
+//  Date: Nov 01 2026
 //------------------------------------------------------------------------------------------------
 
 #if defined(__AVR_ATtiny84__)
@@ -43,7 +43,7 @@
 #define SDA_PIN                 10 // PB0
 #define SCL_PIN                 9  // PB1
 #else
-#error "Board not supported!"
+#error "Wrong board selected!"
 #endif
 
 //#define SERIALDEBUG
@@ -82,10 +82,6 @@ RTC_DS3231 rtc;
 
 #ifdef ONEWIRE
 OneWire ow(ONEWIRE_PIN);
-#endif
-
-#ifdef SERIALDEBUG2
-char buffer[40];
 #endif
 
 enum { TIME_NOTIME = 1, TIME_RTC, TIME_SYNC, TIME_SYNCED };
@@ -129,6 +125,7 @@ void setup() {
   // initialize external RTC
   if (rtc.begin()) {
     if (rtc.lostPower()) {
+      rtc.adjust(DateTime(2026, 1, 1, 12, 0, 0));
       alpha.print("RTC PWR ");
     }
     else {
@@ -450,7 +447,7 @@ uint8_t handleReadTempVcc(uint8_t state) {
         return READ_VCC;
 #endif
 
-#ifdef RTCTEMP:
+#ifdef RTCTEMP
       case READ_RTCTEMP:
         if (rtcOk) {
           temp = rtc.getTemperature();
