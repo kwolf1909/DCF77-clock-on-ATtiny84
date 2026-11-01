@@ -17,13 +17,13 @@ Debugging:<br>
 A serial debug output (9600 baud) can be enabled by uncommenting SERIALDEBUG. Due to limited flash space, this requires some other functions to be disabled temporarily, e.g. OneWire.<br>
 
 Pins used (ATtiny84):<br>
-PA0 - Input, DCF-signal, active-low signal, external pull-up 10 kohms required, external RC low-pass filter recommended.<br>
+PA0 - Input, DCF-signal, active-low signal, external pull-up 10 kilohms required, external RC low-pass filter recommended.<br>
 PA1 - Output, TX for serial debugging.<br>
 PA2 - Input, RX (not used).<br>
 PA3 - Output, LED, mirrors the DCF-input signal in sync-state, active-high.<br>
-PA4 - Input, external 32K clock-signal from DS3231, external pull-up 10 kohms required.<br>
-PA5 - Output, powering DCF receive-module.<br>
-PA6 - Input/Output (OneWire data), temperature sensor DS18B20 with external pullup resistor 10 kohms.<br>
+PA4 - Input, external 32K clock-signal from DS3231, external pull-up 10 kilohms required.<br>
+PA5 - Output, DCF-power, connect to VCC-pin of receive-module.<br>
+PA6 - Input/Output (OneWire data), temperature sensor DS18B20 with external pullup resistor 10 kilohms.<br>
 PA7 - Input, mode select button, active low with input-pullup enabled.<br>
 PB0 - I2C DATA for display & RTC.<br>
 PB1 - I2C CLK for display & RTC.<br>
@@ -37,7 +37,7 @@ DCF77-receiver: ELV DCF-2 (MAS6180-based AM-receiver), any other receiver possib
 DFRobot 7-segment 8-digit 7-segment display: https://www.dfrobot.com/product-1978.html<br>
 Or: Custom built alphanumeric display: http://www.technoblogy.com/show?2ULE<br>
 Temperature-sensor: DS18B20<br>
-Resistors: 1x 1 kohm (LED), 3x 10 kohm (pullups)<br>
+Resistors: 1x 1 kilohm (LED), 3x 10 kilohm (pullups)<br>
 
 Alphanumeric displays used on board: https://www.adafruit.com/product/2154<br>
 
