@@ -17,13 +17,13 @@ Debugging:<br>
 A serial debug output (9600 baud) can be enabled by uncommenting SERIALDEBUG. Due to limited flash space, this requires some other functions to be disabled temporarily, e.g. OneWire.<br>
 
 Pins used (ATtiny84):<br>
-PA0 - Input, DCF-signal, active-low signal, external pull-up 10 kilohms required, external RC low-pass filter recommended.<br>
+PA0 - Input, DCF-signal, active-low signal, external pull-up 10 kilohm required, external RC low-pass filter recommended.<br>
 PA1 - Output, TX for serial debugging.<br>
 PA2 - Input, RX (not used).<br>
 PA3 - Output, LED, mirrors the DCF-input signal in sync-state, active-high.<br>
-PA4 - Input, external 32K clock-signal from DS3231, external pull-up 10 kilohms required.<br>
+PA4 - Input, external 32K clock-signal from DS3231, external pull-up 10 kilohm required.<br>
 PA5 - Output, DCF-power, connect to VCC-pin of receive-module.<br>
-PA6 - Input/Output (OneWire data), temperature sensor DS18B20 with external pullup resistor 10 kilohms.<br>
+PA6 - Input/Output (OneWire data), temperature sensor with external pullup resistor 10 kilohm.<br>
 PA7 - Input, mode select button, active low with input-pullup enabled.<br>
 PB0 - I2C DATA for display & RTC.<br>
 PB1 - I2C CLK for display & RTC.<br>
@@ -32,7 +32,7 @@ Compiles with TinyCore (MCUdude) on Arduino IDE https://github.com/MCUdude/TinyC
 External libraries required: SoftI2CMaster https://github.com/felias-fogg/SoftI2CMaster.<br>
 
 Hardware:<br>
-DS3231 RTC Precision Breakout: https://www.adafruit.com/product/3013<br>
+DS3231 RTC Precision Breakout: https://www.adafruit.com/product/3013, or equivalent.<br>
 DCF77-receiver: ELV DCF-2 (MAS6180-based AM-receiver), any other receiver possible with digital signal output.<br>
 DFRobot 7-segment 8-digit 7-segment display: https://www.dfrobot.com/product-1978.html<br>
 Or: Custom built alphanumeric display: http://www.technoblogy.com/show?2ULE<br>
