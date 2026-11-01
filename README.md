@@ -20,8 +20,8 @@ Pins used (ATtiny84):<br>
 PA0 - Input, DCF-signal, active-low signal, external pull-up 10 kilohm required, external RC low-pass filter recommended.<br>
 PA1 - Output, TX for serial debugging.<br>
 PA2 - Input, RX (not used).<br>
-PA3 - Output, LED, mirrors the DCF-input signal in sync-state, active-high.<br>
-PA4 - Input, external 32K clock-signal from DS3231, external pull-up 10 kilohm required.<br>
+PA3 - Output, LED, mirrors the DCF input-signal in sync-state, active-high.<br>
+PA4 - Input, external 32K clock-signal from RTC, external pull-up 10 kilohm required.<br>
 PA5 - Output, DCF-power, connect to VCC-pin of receive-module.<br>
 PA6 - Input/Output (OneWire data), temperature sensor with external pullup resistor 10 kilohm.<br>
 PA7 - Input, mode select button, active low with input-pullup enabled.<br>
@@ -51,7 +51,7 @@ DCF: Startbit detected, receiving now...
 DCF: Receive complete
 Receive: Receive complete
 Receive: Decode successful
-Receive: RTC synced to DCF-time 17:51:00
+Receive: RTC synced to DCF-time
 ```
 
 
