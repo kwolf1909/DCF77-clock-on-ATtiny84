@@ -28,9 +28,9 @@ PA7 - Input, mode select button, active low with input-pullup enabled.<br>
 PB0 - I2C DATA for display & RTC.<br>
 PB1 - I2C CLK for display & RTC.<br>
 
-## Debugging
-A serial debug output (9600 baud) can be enabled by uncommenting SERIALDEBUG. Due to limited flash space, this requires some other functions to be disabled temporarily, e.g. OneWire.<br>
-This shows a debug-output for a complete receiving-cycle as an example.
+## Serial Monitor
+A serial monitor output (9600 baud) can be enabled by uncommenting SERIALDEBUG. Due to limited flash space, this requires some other functions to be disabled temporarily, e.g. OneWire.<br>
+This shows an output for a complete receiving-cycle as an example.
 ```
 DCF: Minute marker detected
 DCF: Startbit detected, receiving now...
