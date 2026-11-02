@@ -16,19 +16,6 @@ Timers used: Timer1 (DCF pulse width measurement and 2 Hz generation for clock t
 
 Compiles with [TinyCore (MCUdude)](https://github.com/MCUdude/TinyCore) on Arduino IDE. External libraries required: [SoftI2CMaster](https://github.com/felias-fogg/SoftI2CMaster).<br>
 
-## Debugging
-A serial debug output (9600 baud) can be enabled by uncommenting SERIALDEBUG. Due to limited flash space, this requires some other functions to be disabled temporarily, e.g. OneWire.<br>
-This shows a debug-output for a complete receiving-cycle as an example.
-```
-DCF: Minute marker detected
-DCF: Startbit detected, receiving now...
-0000000000000000100100000000100010000010000100001011001000
-DCF: Receive complete
-Receive: Receive complete
-Receive: Decode successful
-Receive: RTC synced to DCF-time
-```
-
 ## Pins used (ATtiny84)
 PA0 - Input, DCF-signal, active-low signal, external pull-up 10 kilohm required, external RC low-pass filter recommended.<br>
 PA1 - Output, TX for serial debugging.<br>
@@ -41,6 +28,18 @@ PA7 - Input, mode select button, active low with input-pullup enabled.<br>
 PB0 - I2C DATA for display & RTC.<br>
 PB1 - I2C CLK for display & RTC.<br>
 
+## Debugging
+A serial debug output (9600 baud) can be enabled by uncommenting SERIALDEBUG. Due to limited flash space, this requires some other functions to be disabled temporarily, e.g. OneWire.<br>
+This shows a debug-output for a complete receiving-cycle as an example.
+```
+DCF: Minute marker detected
+DCF: Startbit detected, receiving now...
+0000000000000000100100000000100010000010000100001011001000
+DCF: Receive complete
+Receive: Receive complete
+Receive: Decode successful
+Receive: RTC synced to DCF-time
+```
 ## Hardware
 [DS3231 RTC Precision Breakout](https://www.adafruit.com/product/3013), or equivalent.<br>
 [DFRobot 7-segment 8-digit 7-segment display](https://www.dfrobot.com/product-1978.html) or [Custom built alphanumeric display](http://www.technoblogy.com/show?2ULE)<br>
