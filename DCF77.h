@@ -29,7 +29,7 @@ struct timeStampDCF77
 class dcf77 {
   public:
     enum class result { SUCCESS = 0, INVALID = -1 };
-    enum class dcfState { IDLE = 1, DETECT, STARTBIT, STARTBITCOMPL, MINUTEMARKER, RECEIVING };
+    enum class dcfState { IDLE = 1, DETECT, STARTBIT, STARTBITCOMPL1, STARTBITCOMPL2, MINUTEMARKER, RECEIVING };
     enum class dcfPulse { NONE = 1, PAUSE, BIT0, BIT1, INVALID };
     enum class dcfPulseType { START = 1, END };
     enum class dcfSignal { WAIT = 1, GOOD, NOSIGNAL };
@@ -202,28 +202,33 @@ void dcf77::handle(void) {
       }
       break;
 
-    case dcfState::STARTBITCOMPL:
+    case dcfState::STARTBITCOMPL1:
+      // wait for pause marker
       if (lastPulseType == dcfPulseType::START) {
         if (lastPulse == dcfPulse::PAUSE) {
-#ifdef SERIALDEBUG
-          DEBUG_PRINTLN("\r\nDCF: Receive complete");
-#endif
-          dcfComplete = true;
-          dcfReq = false;
-          state = dcfState::IDLE;
-          
-          // disable DCF-module
-          PORTA &= ~pinBitmaskDcfPwr;
+          state = dcfState::STARTBITCOMPL2;
         }
         else {
 #ifdef SERIALDEBUG
-          DEBUG_PRINT("\r\nDCF: lastPauseLength ");
-          Serial.println(lastPulseLength, DEC);
-          DEBUG_PRINTLN("DCF: Final startbit not detected, restart");
+          DEBUG_PRINTLN("\r\nDCF: Next startbit not detected, restart");
 #endif
           restartMarker = true;
           state = dcfState::IDLE;
         }
+      }
+      break;
+
+    case dcfState::STARTBITCOMPL2:
+      if (lastPulseType == dcfPulseType::END && lastPulse == dcfPulse::BIT0) {
+#ifdef SERIALDEBUG
+        Serial.println("\r\nDCF: Next startbit detected, receive complete");
+#endif
+        dcfReq = false;
+        dcfComplete = true;
+        state = dcfState::IDLE;
+
+        // disable DCF-module
+        PORTA &= ~pinBitmaskDcfPwr;
       }
       break;
 
@@ -246,7 +251,7 @@ void dcf77::handle(void) {
           state = dcfState::IDLE;
         }
         // finally wait for next startbit to complete
-        if (dcfPos == DCF_SIZE - 1) state = dcfState::STARTBITCOMPL;
+        if (dcfPos == DCF_SIZE - 1) state = dcfState::STARTBITCOMPL1;
       }
       break;
   }
