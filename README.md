@@ -2,6 +2,7 @@
 This application receives the european DCF77 time signal and syncs it with the external RTC-module. It is displayed on an 8-digit 14- or 7-segment display with display-controller HT16K33. The MCU used is an ATtiny84. The application has been ported from initial repository (using ATtiny1614 or ATmega4809).<br>
 The circuit can be powered by a Li-Ion cell. If the voltage drops below 3.0 V, the voltage is displayed as a low voltage indicator.<br>
 The temperature can be read by internal sensor of RTC or external OneWire-based sensor by uncommenting the appropriate defines.<br>
+The nightmode darkens the display during defined night-hours (can be disabled). During nightmode, a button-press will temporarily light up the display.<br>
 A sync to DCF-time is performed in the background every 30 minutes, and immediately after power-up.<br>
 The software uses a layer-based approach. Low-level: DCF-object with interrupt handler, mid-level: receiving data state machine, upper level: display handling and user interface.<br>
 No blocking code, using several finite state machines (FSM).<br>
