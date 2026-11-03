@@ -166,7 +166,7 @@ void dcf77::handle(void) {
         // minute marker detected
 #ifdef SERIALDEBUG
         DEBUG_PRINT("DCF: lastPauseLength ");
-        Serial.println(lastPulseLength, DEC);
+        DEBUG_PRINTDEC(lastPulseLength);
         DEBUG_PRINTLN("DCF: Minute marker detected");
 #endif
         minuteMarker = true;
@@ -175,7 +175,7 @@ void dcf77::handle(void) {
 #ifdef SERIALDEBUG
       if (lastPulseType == dcfPulseType::END) {
         DEBUG_PRINT("DCF: lastPulseLength ");
-        Serial.println(lastPulseLength, DEC);
+        DEBUG_PRINTDEC(lastPulseLength);
       }
 #endif
       break;
@@ -221,7 +221,7 @@ void dcf77::handle(void) {
     case dcfState::STARTBITCOMPL2:
       if (lastPulseType == dcfPulseType::END && lastPulse == dcfPulse::BIT0) {
 #ifdef SERIALDEBUG
-        Serial.println("\r\nDCF: Next startbit detected, receive complete");
+        DEBUG_PRINTLN("\r\nDCF: Next startbit detected, receive complete");
 #endif
         dcfReq = false;
         dcfComplete = true;
