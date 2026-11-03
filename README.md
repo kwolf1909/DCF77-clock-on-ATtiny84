@@ -4,8 +4,7 @@ The circuit can be powered by a Li-Ion cell. If the voltage drops below 3.0 V, t
 The temperature will be read by internal sensor of RTC or external OneWire-based sensor, by uncommenting the appropriate defines.<br>
 The nightmode darkens the display during defined night-hours (can be disabled). During nightmode, a button-press will temporarily light up the display.<br>
 A sync to DCF-time is performed in the background every 30 minutes, and immediately after power-up.<br>
-The software uses a layer-based approach. Low-level: DCF-object with interrupt handler, mid-level: receiving data state machine, upper level: display handling and user interface.<br>
-No blocking code, using several finite state machines (FSM).<br>
+The software uses a layer-based approach. Low-level: DCF-object with interrupt handler, mid-level: receiving data state machine, upper level: display handling and user interface. No blocking code, using several finite state machines (FSM).<br>
 For I2C a bit-banging library is used, because the hardware-pin for I2C-CLK is shared with Timer1 clock-input (T1).<br>
 The DCF-module is powered by an output pin, so it's only powered up during a receive cycle.<br>
 
