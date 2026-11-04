@@ -1,27 +1,28 @@
 ## Introduction
-This application receives the european DCF77 time signal and syncs it with the external RTC-module. It is displayed on an 8-digit 14- or 7-segment display with display-controller HT16K33. The MCU used is an ATtiny84. The application has been ported from initial repository (using ATtiny1614 or ATmega4809).<br>
-The circuit can be powered by a Li-Ion cell. If the voltage drops below 3.0 V, the voltage is displayed as a low voltage indicator.<br>
-The temperature will be read by internal sensor of RTC or external OneWire-based sensor, by uncommenting the appropriate defines.<br>
-The nightmode darkens the display during defined night-hours (can be disabled). During nightmode, a button-press will temporarily light up the display.<br>
-A sync to DCF-time is performed in the background every 30 minutes, and immediately after power-up.<br>
-The software uses a layer-based approach. Low-level: DCF-object with interrupt handler, mid-level: receiving data state machine, upper level: display handling and user interface. No blocking code, using several finite state machines (FSM).<br>
-For I2C a bit-banging library is used, because the hardware-pin for I2C-CLK is shared with Timer1 clock-input (T1).<br>
-The DCF-module is powered by an output pin, so it's only powered up during a receive cycle.<br>
-
-Push-button based interface:<br>
-Select display modes: time with date | time with seconds | time with temperature | time with battery voltage.<br>
+This application receives the european DCF77 time signal and syncs it with the external RTC-module. It is displayed on an 8-digit 14- or 7-segment display with display-controller HT16K33.
++ The MCU used is an ATtiny84. The application has been ported from initial repository (using ATtiny1614 or ATmega4809).
++ The circuit can be powered by a Li-Ion cell. If the voltage drops below 3.0 V, the voltage is displayed as a low voltage indicator.
++ The temperature can be read by internal sensor of RTC or external OneWire-based sensor, by uncommenting the appropriate defines.
++ The nightmode darkens the display during defined night-hours (can be disabled). During nightmode, a button-press will temporarily light up the display.
++ A sync to DCF-time is performed in the background every 30 minutes, and immediately after power-up.
++ The software uses a layer-based approach. Low-level: DCF-object with interrupt handler, mid-level: receiving data state machine, upper level: display handling and user interface. No blocking code, using several finite state machines (FSM).
++ For I2C a bit-banging library is used, because the hardware-pin for I2C-CLK is shared with Timer1 clock-input (T1).
++ The DCF-module is powered by an output pin, so it's only powered up during a receive cycle.
 
 MCU-clock: 8 MHz<br>
-Timers used: Timer1 (DCF pulse width measurement and 2 Hz generation for clock ticks)<br>
+Timers used: Timer1 (DCF pulse width measurement and 2 Hz generation for clock ticks), clocked by external RTC.<br>
 
 Compiles with [TinyCore (MCUdude)](https://github.com/MCUdude/TinyCore) on Arduino IDE. External libraries required: [SoftI2CMaster](https://github.com/felias-fogg/SoftI2CMaster).<br>
+
+## Push-button based interface
+Select display modes: time with date | time with seconds | time with temperature | time with battery voltage.
 
 ## Pins used (ATtiny84)
 PA0 - Input, DCF-signal, active-low signal, external pull-up 10 kilohm required, external RC low-pass filter recommended.<br>
 PA1 - Output, TX for serial debugging.<br>
 PA2 - Input, RX (not used).<br>
 PA3 - Output, LED, mirrors the DCF input-signal in sync-state, active-high.<br>
-PA4 - Input, external 32K clock-signal from RTC, external pull-up 10 kilohm required.<br>
+PA4 - Input, T1, external 32K clock-signal from RTC, external pull-up 10 kilohm required.<br>
 PA5 - Output, DCF-power, connect to VCC-pin of receive-module.<br>
 PA6 - Input/Output (OneWire data), temperature sensor with external pullup resistor 10 kilohm.<br>
 PA7 - Input, mode select button, active low with input-pullup enabled.<br>
