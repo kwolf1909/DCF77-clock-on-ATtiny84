@@ -33,7 +33,7 @@ class dcf77 {
     enum class dcfPulse { NONE = 1, PAUSE, BIT0, BIT1, INVALID };
     enum class dcfPulseType { START = 1, END };
     enum class dcfSignal { WAIT = 1, GOOD, NOSIGNAL };
-    uint8_t pinBitmaskDcf, pinBitmaskDcfPwr, pinBitmaskLed, pinBitmask32k;
+    uint8_t pinBitmaskDcf;
 
     dcf77();
     void begin(uint8_t, uint8_t, uint8_t, uint8_t);
@@ -60,9 +60,9 @@ class dcf77 {
     void handleInt(bool);
 
   private:
-    bool dcfReq, minuteMarker, restartMarker, startBit, receiveBit, dcfComplete;
-    bool pulseReceivedAnim, noSignalMarker;
-    uint8_t bitArray[DCF_SIZE], dcfPos, noSignalCounter, validPulses;
+    bool dcfReq, minuteMarker, restartMarker, startBit, receiveBit, dcfComplete, pulseReceivedAnim, noSignalMarker;
+    uint8_t bitArray[DCF_SIZE], dcfPos, noSignalCounter, validPulses,
+            pinBitmaskDcfPwr, pinBitmaskLed, pinBitmask32k;
     volatile uint16_t timerTicks;
     dcf77::dcfState state;
     dcf77::dcfSignal signalStatus;
@@ -187,8 +187,9 @@ void dcf77::handle(void) {
           DEBUG_PRINTLN("DCF: Startbit detected, receiving now...");
 #endif
           bitArray[0] = 0;
-          dcfPos = 0;
+          restartMarker = false;
           startBit = true;
+          receiveBit = true;
           state = dcfState::RECEIVING;
         }
         else {
@@ -228,6 +229,7 @@ void dcf77::handle(void) {
         state = dcfState::IDLE;
 
         // disable DCF-module
+        PORTA &= ~pinBitmaskLed;
         PORTA &= ~pinBitmaskDcfPwr;
       }
       break;

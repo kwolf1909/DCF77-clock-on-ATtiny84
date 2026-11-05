@@ -15,7 +15,7 @@
 //  External RTC: DS3231 with battery backup, supplies 32K clock for Timer1
 //
 //  Author: Klaus Wolf
-//  Date: Nov 03 2026
+//  Date: Nov 05 2026
 //------------------------------------------------------------------------------------------------
 
 #if defined(__AVR_ATtiny84__)
