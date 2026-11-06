@@ -79,13 +79,13 @@ class dcf77 {
 // constructor
 dcf77::dcf77() {
   state = dcfState::IDLE;
-  dcfPos = 0;
   dcfReq = false;
   dcfComplete = false;
   minuteMarker = false;
   restartMarker = false;
   startBit = false;
   signalStatus = dcfSignal::WAIT;
+  dcfPos = 0;
   timerTicks = 0;
   noSignalCounter = 0;
   validPulses = 0;
@@ -134,10 +134,20 @@ void dcf77::handle(void) {
     case dcfState::IDLE:
       if (dcfReq) {
         dcfComplete = false;
-        validPulses = 0;
+        minuteMarker = false;
+        startBit = false;
+        receiveBit = false;
+        restartMarker = false;
         dcfPos = 0;
+        validPulses = 0;
         signalStatus = dcfSignal::WAIT;
         state = dcfState::DETECT;
+
+        // enable DCF-module
+        PORTA |= pinBitmaskDcfPwr;
+  
+        // clear receive data buffer
+        for (uint8_t i = 0; i < DCF_SIZE; i++) bitArray[i] = 0;
       }
       break;
 
@@ -283,19 +293,7 @@ void dcf77::timerTick(void) {
 }
 
 void dcf77::request(void) {
-  dcfPos = 0;
   dcfReq = true;
-  dcfComplete = false;
-  minuteMarker = false;
-  startBit = false;
-  receiveBit = false;
-  restartMarker = false;
-
-  // enable DCF-module
-  PORTA |= pinBitmaskDcfPwr;
-  
-  // clear receive data buffer
-  for (uint8_t i = 0; i < DCF_SIZE; i++) bitArray[i] = 0;
 }
 
 bool dcf77::getRequestState(void) {

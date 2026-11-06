@@ -15,7 +15,7 @@
 //  External RTC: DS3231 with battery backup, supplies 32K clock for Timer1
 //
 //  Author: Klaus Wolf
-//  Date: Nov 05 2026
+//  Date: Nov 06 2026
 //------------------------------------------------------------------------------------------------
 
 #if defined(__AVR_ATtiny84__)
@@ -268,10 +268,10 @@ uint8_t handleReceive(uint8_t state) {
         return RECEIVE_RECEIVING;
       }
       if (prevtt != tt) {
-        newSyncCounter++;
         prevtt = tt;
+        if (tt) newSyncCounter++;
+        if (newSyncCounter >= newSyncSeconds && dt.second() == 50) syncReq = true;
       }
-      if (newSyncCounter > newSyncSeconds && dt.second() == 50) syncReq = true;
       break;
 
     case RECEIVE_RECEIVING:
@@ -318,6 +318,7 @@ uint8_t handleReceive(uint8_t state) {
 uint8_t handleTime(uint8_t state) {
 
   bool tt = tickTock;
+  uint8_t ss;
   static bool prevtt = false;
   static uint8_t nightModeCounter = 0;
 
@@ -364,10 +365,10 @@ uint8_t handleTime(uint8_t state) {
       break;
 
     case TIME_SYNCED:
-      if (nightModeActive && nightModeTempOff == false)
-        showTime(SHOW_NIGHT, tt, dt.hour(), dt.minute(), dt.second(), dt.month(), dt.day());
-      else
-        showTime(showState, tt, dt.hour(), dt.minute(), dt.second(), dt.month(), dt.day());
+      ss = showState;
+      if (nightModeActive && nightModeTempOff == false) ss = SHOW_NIGHT;
+      
+      showTime(ss, tt, dt.hour(), dt.minute(), dt.second(), dt.month(), dt.day());
       break;
   }
   return state;
