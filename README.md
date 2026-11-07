@@ -19,7 +19,7 @@ Select display modes: time with date | time with seconds | time with temperature
 
 ## Pins used (ATtiny84)
 PA0 - Input, DCF-signal, active-low signal, external pull-up 10 kilohm required, external RC low-pass filter recommended.<br>
-PA1 - Output, TX for serial debugging.<br>
+PA1 - Output, TX for serial monitoring.<br>
 PA2 - Input, RX (not used).<br>
 PA3 - Output, LED, mirrors the DCF input-signal in sync-state, active-high.<br>
 PA4 - Input, T1, external 32K clock-signal from RTC, external pull-up 10 kilohm required.<br>
