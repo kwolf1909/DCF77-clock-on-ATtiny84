@@ -15,7 +15,7 @@
 //  External RTC: DS3231 with battery backup, supplies 32K clock for Timer1
 //
 //  Author: Klaus Wolf
-//  Date: Nov 06 2026
+//  Date: Nov 14 2026
 //------------------------------------------------------------------------------------------------
 
 #if defined(__AVR_ATtiny84__)
@@ -25,12 +25,10 @@
 #define SCL_PIN                 1
 #define I2C_NOINTERRUPT         1
 #include <SoftWire.h>
-#define RTCEXT
-#define RTCEXT32K
-//#define RTCTEMP
 #define LED
 #define BUTTON
 #define ONEWIRE
+//#define RTCTEMP
 #define VOLTAGE
 #define SEG14
 #define DCF_PIN                 0  // PA0
@@ -51,8 +49,8 @@ const bool    nightMode = true;         // enable night mode
 const uint8_t displayAddress = 0x70;    // I2C display address
 const uint8_t displayDigits = 8;        // number of digits
 const uint8_t displayBrightness = 4;    // display brightness (0...15)
-const uint8_t nightModeOn = 23;         // turn nightmode on (hour)
-const uint8_t nightModeOff = 7;         // turn nightmode off (hour)
+const uint8_t nightModeOn = 22;         // turn nightmode on (hour)
+const uint8_t nightModeOff = 8;         // turn nightmode off (hour)
 const uint8_t nightModeTempOffSec = 10; // nightmode temporary disable (seconds)
 const uint8_t oneWireRes = 11;          // temp sensor resolution (9...12 bits)
 const uint8_t readDelay = 10;           // read temperature and voltage (seconds)
@@ -79,10 +77,7 @@ AlphaDisplay alpha;
 dcf77 dcf;
 timeStampDCF77 dcfTime;
 DateTime dt;
-
-#ifdef RTCEXT
 RTC_DS3231 rtc;
-#endif
 
 #ifdef ONEWIRE
 OneWire ow;
@@ -125,7 +120,6 @@ void setup() {
 #endif
 
   timeState = TIME_NOTIME;
-#ifdef RTCEXT
   // initialize external RTC
   if (rtc.begin()) {
     if (rtc.lostPower()) {
@@ -135,9 +129,7 @@ void setup() {
       timeState = TIME_RTC;
       alpha.print("RTC OK  ");
     }
-#ifdef RTCEXT32K
     rtc.enable32K();
-#endif
     rtcOk = true;
   }
   else {
@@ -145,7 +137,6 @@ void setup() {
     rtcOk = false;
   }
   delay(1000);
-#endif
 
 #ifdef VOLTAGE
   ADCinit();
@@ -222,7 +213,7 @@ uint8_t handleAnimation(uint8_t state) {
       break;
 
     case SHOWSYNC_MINUTEMARKER:
-      if (dcf.checkMinuteMarker()) {
+      if (dcf.checkStartBit()) {
         showSync(SHOWSYNC_RECEIVING);
         return SHOWSYNC_RECEIVING;
       }
@@ -290,9 +281,8 @@ uint8_t handleReceive(uint8_t state) {
 #endif
         // update local time
         dt = DateTime(dcfTime.year, dcfTime.month, dcfTime.day, dcfTime.hour, dcfTime.minute, 0);
-#ifdef RTCEXT
         rtc.adjust(dt);
-#endif
+
 #ifdef SERIALDEBUG
         DEBUG_PRINTLN("Receive: RTC synced to DCF-time");
 #endif
@@ -350,13 +340,12 @@ uint8_t handleTime(uint8_t state) {
       syncReq = true;
       return TIME_SYNC;
 
-#ifdef RTCEXT
     case TIME_RTC:
       // initial start with RTC time
       dt = rtc.now();
       if (syncAfterStart) syncReq = true;
       return TIME_SYNCED;
-#endif
+
     case TIME_SYNC:
       if (syncComplete) {
         syncComplete = false;
