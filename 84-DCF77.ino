@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //  84-DCF77.ino
 //
-//  This program receives the european DCF77 time signal and syncs it with the external RTC-clock.
+//  This application receives the european DCF77 time signal and syncs it with the external RTC-clock.
 //  It is displayed on an 8-digit alphanumeric- or 7-segment display with display-controller HT16K33.
 //  The MCU used is an ATtiny84.
 //  The circuit can be powered by a Li-Ion cell. If the voltage drops below 3.0 V,
@@ -15,7 +15,7 @@
 //  External RTC: DS3231 with battery backup, supplies 32K clock for Timer1
 //
 //  Author: Klaus Wolf
-//  Date: Nov 14 2026
+//  Date: Nov 16 2026
 //------------------------------------------------------------------------------------------------
 
 #if defined(__AVR_ATtiny84__)
@@ -28,8 +28,8 @@
 #define LED
 #define BUTTON
 #define ONEWIRE
-//#define RTCTEMP
 #define VOLTAGE
+//#define RTCTEMP
 #define SEG14
 #define DCF_PIN                 0  // PA0
 #define TX_PIN                  1  // PA1
@@ -386,6 +386,16 @@ uint8_t handleButton(uint8_t state) {
       if (stableState == true) buttonPressed = true;
     }
   }
+
+  // trigger display voltage only once
+  if (lowBatt) {
+    if (lastLowBatt == false) {
+      lastLowBatt = true;
+      return SHOW_VOLTAGE;
+    }
+  }
+  else lastLowBatt = false;
+
   if (buttonPressed) {
     buttonPressed = false;
     
@@ -413,11 +423,6 @@ uint8_t handleButton(uint8_t state) {
       case SHOW_VOLTAGE:
         return SHOW_TIMEDATE;
     }
-  }
-  // trigger display voltage only once
-  if (lowBatt && lastLowBatt == false) {
-    lastLowBatt = true;
-    return SHOW_VOLTAGE;
   }
   return state;
 }
@@ -641,6 +646,7 @@ void showTime(uint8_t mode, bool dot, uint8_t hr, uint8_t min, uint8_t sec, uint
     case SHOW_NIGHT:
       for (uint8_t i = 0; i < displayDigits; i++) buffer[i] = ' ';
       buffer[1] |= dot ? DOT : 0;
+      buffer[3] |= sync ? DOT : 0;
       break;
 
     default: return;
