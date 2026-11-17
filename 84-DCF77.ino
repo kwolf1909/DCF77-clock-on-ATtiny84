@@ -408,7 +408,6 @@ uint8_t handleButton(uint8_t state) {
     // change show state
     switch (state) {
       case SHOW_TIMEDATE:
-        lastLowBatt = false;
         return SHOW_TIMEFULL;
 
       case SHOW_TIMEFULL:
