@@ -15,7 +15,7 @@
 //  External RTC: DS3231 with battery backup, supplies 32K clock for Timer1
 //
 //  Author: Klaus Wolf
-//  Date: Nov 16 2026
+//  Date: Nov 22 2026
 //------------------------------------------------------------------------------------------------
 
 #if defined(__AVR_ATtiny84__)
@@ -26,9 +26,7 @@
 #define I2C_NOINTERRUPT         1
 #include <SoftWire.h>
 #define LED
-#define BUTTON
 #define ONEWIRE
-#define VOLTAGE
 //#define RTCTEMP
 #define SEG14
 #define DCF_PIN                 0  // PA0
@@ -103,12 +101,10 @@ void setup() {
   alpha.print("INIT");
   delay(1000);
 
-#ifdef BUTTON
   // enable button input pin with pullup (active low)
   pinBitmaskButton = digitalPinToBitMask(BUTTON_PIN);
   DDRA &= ~pinBitmaskButton;
   PORTA |= pinBitmaskButton;
-#endif
 
 #ifdef ONEWIRE
   ow.setup(ONEWIRE_PIN);
@@ -138,11 +134,7 @@ void setup() {
   }
   delay(1000);
 
-#ifdef VOLTAGE
   ADCinit();
-#endif
-  // start DCF signal processing
-  dcf.begin(DCF_PIN, DCFPWR_PIN, LED_PIN, RTC32K_PIN);
 
   receiveState = RECEIVE_INIT;
   syncState = SHOWSYNC_IDLE;
@@ -155,6 +147,9 @@ void setup() {
   nightModeActive = false;
   nightModeTempOff = false;
   vcc = voltageLimit;
+
+  // finally start DCF signal processing
+  dcf.begin(DCF_PIN, DCFPWR_PIN, LED_PIN, RTC32K_PIN);
 
 #ifdef SERIALDEBUG
   DEBUG_PRINTLN("Init finished.");
@@ -177,15 +172,12 @@ void loop() {
   // state machine for time and display handling
   timeState = handleTime(timeState);
 
-#ifdef BUTTON
   // switching display modes
   showState = handleButton(showState);
-#endif
 
-#if defined (ONEWIRE) || defined (VOLTAGE)
   // handle temp and voltage reading
   readState = handleReadTempVcc(readState);
-#endif
+
   delay(2);
 }
 
@@ -307,33 +299,17 @@ uint8_t handleReceive(uint8_t state) {
 
 uint8_t handleTime(uint8_t state) {
 
-  bool tt = tickTock;
-  uint8_t ss;
+  bool nm, tt = tickTock;
   static bool prevtt = false;
-  static uint8_t nightModeCounter = 0;
-
+ 
   if (prevtt == tt) return state;
   prevtt = tt;
 
   // increase local time by one second
   if (tt) dt = dt + 1;
 
-  // handle nightmode
-  if (nightMode) {
-    if (dt.hour() >= nightModeOn || dt.hour() < nightModeOff)
-      nightModeActive = true;
-    else
-      nightModeActive = false;
+  nm = isNightMode();
   
-    // handle temporary disabling
-    if (tt && nightModeTempOff) {
-      if (nightModeCounter++ >= nightModeTempOffSec) {
-        nightModeCounter = 0;
-        nightModeTempOff = false;
-      }
-    }
-  }
-
   switch (state) {
     case TIME_NOTIME:
       // with no RTC-time, wait for DCF-time
@@ -354,10 +330,7 @@ uint8_t handleTime(uint8_t state) {
       break;
 
     case TIME_SYNCED:
-      ss = showState;
-      if (nightModeActive && nightModeTempOff == false) ss = SHOW_NIGHT;
-      
-      showTime(ss, tt, dt.hour(), dt.minute(), dt.second(), dt.month(), dt.day());
+      showTime(nm ? SHOW_NIGHT : showState, tt, dt.hour(), dt.minute(), dt.second(), dt.month(), dt.day());
       break;
   }
   return state;
@@ -365,7 +338,6 @@ uint8_t handleTime(uint8_t state) {
 
 //----------------------------------------------------------------------------------
 
-#ifdef BUTTON
 uint8_t handleButton(uint8_t state) {
   bool button;
   static bool lastLowBatt = false;
@@ -425,15 +397,14 @@ uint8_t handleButton(uint8_t state) {
   }
   return state;
 }
-#endif
 
 //----------------------------------------------------------------------------------
-#if defined (ONEWIRE) || defined (RTCTEMP) || defined (VOLTAGE)
+
 uint8_t handleReadTempVcc(uint8_t state) {
 
   bool tt = tickTock;
   static bool prevtt = false;
-  static uint8_t delayCounter = 0;
+  static uint8_t delayCounter = readDelay;
 
   if (prevtt == tt) return state;
   prevtt = tt;
@@ -446,15 +417,14 @@ uint8_t handleReadTempVcc(uint8_t state) {
     switch (state) {
       case READ_IDLE:
         if (delayCounter++ >= readDelay) {
+           delayCounter = 0;
 
 #if defined (ONEWIRE)
           return READ_STARTCONV;
 #elif defined (RTCTEMP)
           return READ_RTCTEMP;
-#elif defined (VOLTAGE)
-          return READ_VCC;
 #else
-          return READ_IDLE;
+          return READ_VCC;
 #endif
         }
         break;
@@ -486,9 +456,7 @@ uint8_t handleReadTempVcc(uint8_t state) {
         }
         return READ_VCC;
 #endif
-
       case READ_VCC:
-#ifdef VOLTAGE
         vcc = measureVoltage();
         voltage = true;
         lowBatt = false;
@@ -497,14 +465,34 @@ uint8_t handleReadTempVcc(uint8_t state) {
         DEBUG_PRINT("ADC: Voltage: ");
         DEBUG_PRINTDEC(vcc);
 #endif
-#endif
-        delayCounter = 0;
         return READ_IDLE;
     }
   }
   return state;
 }
-#endif
+
+//----------------------------------------------------------------------------------
+
+bool isNightMode(void) {
+  static uint8_t nightModeCounter = 0;
+
+  if (nightMode) {
+    if (dt.hour() >= nightModeOn || dt.hour() < nightModeOff)
+      nightModeActive = true;
+    else
+      nightModeActive = false;
+
+    // handle temporary disabling
+    if (nightModeTempOff) {
+      if (nightModeCounter++ >= (nightModeTempOffSec * 2)) {
+        nightModeCounter = 0;
+        nightModeTempOff = false;
+      }
+    }
+  }
+  if (nightModeActive && nightModeTempOff == false) return true;
+  else return false;
+}
 
 //----------------------------------------------------------------------------------
 
@@ -632,7 +620,7 @@ void showTime(uint8_t mode, bool dot, uint8_t hr, uint8_t min, uint8_t sec, uint
         break;
       }
 #endif
-#ifdef VOLTAGE
+
     case SHOW_VOLTAGE:
       // add voltage
       buffer[3] |= (sync ? DOT : 0);
@@ -641,7 +629,7 @@ void showTime(uint8_t mode, bool dot, uint8_t hr, uint8_t min, uint8_t sec, uint
       buffer[6] = '0' + (((vcc + 50) / 100) % 10);
       buffer[7] = 'V';
       break;
-#endif
+
     case SHOW_NIGHT:
       for (uint8_t i = 0; i < displayDigits; i++) buffer[i] = ' ';
       buffer[1] |= dot ? DOT : 0;
@@ -655,36 +643,31 @@ void showTime(uint8_t mode, bool dot, uint8_t hr, uint8_t min, uint8_t sec, uint
 
 //----------------------------------------------------------------------------------
 
-#ifdef VOLTAGE
 // configure internal ADC
 void ADCinit(void) {
   // prescaler / clock setup for ADC
+  ADMUX = _BV(MUX5) | _BV(MUX0);
   ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1);
+  delay(2);
+  ADCSRA |= (1 << ADSC);
+  while (ADCSRA & (1 << ADSC));
+  (void)ADC; 
 }
 
 // read voltage, accumulate 16 samples
 uint16_t measureVoltage(void) {
-  uint8_t low, high;
-  uint16_t adc, adcSum = 0;
-
-  ADMUX = _BV(MUX5) | _BV(MUX0);
-  delay(2);
+  uint16_t adcSum = 0;
 
   for (uint8_t i = 0; i < 16; i++) {
-    ADCSRA |= _BV(ADSC);
+    ADCSRA |= (1 << ADSC);
     while (ADCSRA & (1 << ADSC));
-
-    low  = ADCL;
-    high = ADCH;
-    adc = (high << 8) | low;
-    adcSum += adc;
+    adcSum += ADC;
   }
   if (adcSum == 0) return 0;
 
   // calculate Vcc (in mV); 1125300 = 1.1 * 1023 * 1000
   return (uint16_t)(1125300L / (adcSum / 16));
 }
-#endif
 
 // DCF77 interrupt handler, is called on every pulse edge
 ISR(PCINT0_vect) {

@@ -11,7 +11,8 @@ const uint16_t pauseDurationHigh = (timerFreq * 220) / 100;     // 2200 ms
 #define DCF_SIZE          59
 #define NOSIGNAL_COUNTER  10
 
-struct timeStampDCF77 {
+struct timeStampDCF77
+{
   // raw DCF77 values are always in two digits
   uint8_t minute;
   uint8_t hour;
@@ -141,7 +142,7 @@ void dcf77::handle(void) {
         validPulses = 0;
         signalStatus = dcfSignal::WAIT;
         state = dcfState::DETECT;
- 
+
         // clear receive data buffer
         for (uint8_t i = 0; i < DCF_SIZE; i++) bitArray[i] = 0;
       }
@@ -193,7 +194,6 @@ void dcf77::handle(void) {
           DEBUG_PRINTLN("DCF: Startbit detected, receiving now...");
 #endif
           bitArray[0] = 0;
-          restartMarker = false;
           startBit = true;
           receiveBit = true;
           state = dcfState::RECEIVING;
