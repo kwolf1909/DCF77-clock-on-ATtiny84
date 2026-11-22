@@ -521,7 +521,7 @@ DateTime RTC_Micros::now() {
 #define DS3231_CONTROL 0x0E   // Control register
 #define DS3231_STATUSREG 0x0F // Status register
 #define DS3231_TEMPERATUREREG 0x11  // Temperature register (high byte - low byte is at 0x12), 10-bit
-                                    // temperature value
+// temperature value
 
 class RTC_I2C {
   protected:
@@ -619,7 +619,7 @@ class RTC_DS3231 : RTC_I2C {
     void enable32K(void);
     void disable32K(void);
     bool isEnabled32K(void);
-    int16_t getTemperature(); // in Celsius degree
+    int16_t getTemperature();
     static uint8_t dowToDS3231(uint8_t d) {
       return d == 0 ? 7 : d;
     }
@@ -651,9 +651,9 @@ void RTC_DS3231::adjust(const DateTime &dt) {
   Wire.write(buffer, 8);
   Wire.endTransmission();
 
-//uint8_t statreg = read_register(DS3231_STATUSREG);
-//statreg &= ~0x80; // clear OSF bit
-//write_register(DS3231_STATUSREG, statreg);
+  //uint8_t statreg = read_register(DS3231_STATUSREG);
+  //statreg &= ~0x80; // clear OSF bit
+  //write_register(DS3231_STATUSREG, statreg);
 }
 
 DateTime RTC_DS3231::now() {
@@ -687,6 +687,8 @@ void RTC_DS3231::writeSqwPinMode(Ds3231SqwPinMode mode) {
 int16_t RTC_DS3231::getTemperature() {
   uint8_t buffer[2] = {DS3231_TEMPERATUREREG, 0};
   write_then_read(buffer, 1, buffer, 2);
+
+  // return temperature multiplied by 100 (integer only)
   return (int16_t)(buffer[0] * 100 + (buffer[1] >> 6) * 25);
 }
 
