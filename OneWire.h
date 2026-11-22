@@ -41,6 +41,7 @@ OneWire::OneWire() {}
 void OneWire::setup(uint8_t owPin) {
   pinBitmask = digitalPinToBitMask(owPin);
   DDRA &= ~pinBitmask;
+  PORTA |= pinBitmask;
 }
 
 inline void OneWire::pinLow() {
@@ -50,6 +51,7 @@ inline void OneWire::pinLow() {
 
 inline void OneWire::pinRelease() {
   DDRA &= ~pinBitmask;
+  PORTA |= pinBitmask;
 }
 
 inline uint8_t OneWire::pinRead () {
@@ -65,7 +67,7 @@ void OneWire::lowRelease(uint16_t low, uint16_t high) {
 
 // bus reset, returns 0 if device is present
 uint8_t OneWire::reset() {
-  uint8_t data = 1;
+  uint8_t data;
 
   lowRelease((uint16_t)timing::RESETLOW, (uint8_t)timing::RESETREL);
   data = pinRead();
